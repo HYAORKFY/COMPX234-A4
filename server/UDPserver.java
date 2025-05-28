@@ -30,6 +30,10 @@ public class UDPserver {
             if (!file.exists()) {
                 String response = "ERR " + filename + " NOT_FOUND";
                 sendResponse(welcomeSocket, clientAddress, clientPort, response);
+            } else {
+                int dataPort = 50000 + (int) (Math.random() * 1000);
+                String okResponse = "OK " + filename + " SIZE " + file.length() + " PORT " + dataPort;
+                sendResponse(welcomeSocket, clientAddress, clientPort, okResponse);
             }
         }
     }
