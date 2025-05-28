@@ -15,7 +15,15 @@ public class UDPserver {
             byte[] buffer = new byte[1024];
             DatagramPacket requestPacket = new DatagramPacket(buffer, buffer.length);
             welcomeSocket.receive(requestPacket);
-            System.out.println("Received request from client");
+
+            String request = new String(requestPacket.getData(), 0, requestPacket.getLength()).trim();
+            String[] tokens = request.split(" ");
+            if (tokens.length != 2 || !tokens[0].equals("DOWNLOAD")) {
+                continue; // Ignore invalid requests
+            }
+
+            String filename = tokens[1];
+            System.out.println("Client requested to download: " + filename);
         }
     }
 }
