@@ -23,7 +23,20 @@ public class UDPserver {
             }
 
             String filename = tokens[1];
-            System.out.println("Client requested to download: " + filename);
+            File file = new File(filename);
+            InetAddress clientAddress = requestPacket.getAddress();
+            int clientPort = requestPacket.getPort();
+
+            if (!file.exists()) {
+                String response = "ERR " + filename + " NOT_FOUND";
+                sendResponse(welcomeSocket, clientAddress, clientPort, response);
+            }
         }
+    }
+
+    private static void sendResponse(DatagramSocket socket, InetAddress address, int port, String message) throws IOException {
+        byte[] data = message.getBytes();
+        DatagramPacket packet = new DatagramPacket(data, data.length, address, port);
+        socket.send(packet);
     }
 }
