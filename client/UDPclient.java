@@ -32,7 +32,12 @@ public class UDPclient {
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
             socket.receive(receivePacket);
             String response = new String(receivePacket.getData(), 0, receivePacket.getLength()).trim();
-            System.out.println("Server response: " + response);
+
+            if (response.startsWith("ERR")) {
+                System.out.println("Error: " + response);
+            } else {
+                System.out.println("Server response: " + response);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
