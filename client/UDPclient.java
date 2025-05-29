@@ -12,9 +12,18 @@ public class UDPclient {
         int port = Integer.parseInt(args[1]);
         String fileListPath = args[2];
 
+        try (BufferedReader br = new BufferedReader(new FileReader(fileListPath))) {
+            String filename;
+            while ((filename = br.readLine()) != null) {
+                downloadFile(hostname, port, filename.trim());
+            }
+        }
+    }
+
+    private static void downloadFile(String hostname, int port, String filename) {
         try (DatagramSocket socket = new DatagramSocket()) {
             InetAddress address = InetAddress.getByName(hostname);
-            String request = "DOWNLOAD " + fileListPath;
+            String request = "DOWNLOAD " + filename;
             byte[] sendData = request.getBytes();
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, address, port);
             socket.send(sendPacket);
@@ -24,6 +33,8 @@ public class UDPclient {
             socket.receive(receivePacket);
             String response = new String(receivePacket.getData(), 0, receivePacket.getLength()).trim();
             System.out.println("Server response: " + response);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
