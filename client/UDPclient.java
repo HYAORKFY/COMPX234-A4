@@ -1,7 +1,10 @@
 import java.io.*;
 import java.net.*;
+import java.util.Base64;
 
 public class UDPclient {
+    private static final int INITIAL_TIMEOUT = 1000;
+
     public static void main(String[] args) throws IOException {
         if (args.length != 3) {
             System.err.println("Usage: java UDPclient <hostname> <port> <filelist>");
@@ -20,12 +23,12 @@ public class UDPclient {
         }
     }
 
-    private static void downloadFile(String hostname, int port, String filename) {
+    private static void downloadFile(String hostname, int serverPort, String filename) {
         try (DatagramSocket socket = new DatagramSocket()) {
             InetAddress address = InetAddress.getByName(hostname);
             String request = "DOWNLOAD " + filename;
             byte[] sendData = request.getBytes();
-            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, address, port);
+            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, address, serverPort);
             socket.send(sendPacket);
 
             byte[] receiveData = new byte[1024];
@@ -35,8 +38,35 @@ public class UDPclient {
 
             if (response.startsWith("ERR")) {
                 System.out.println("Error: " + response);
-            } else {
-                System.out.println("Server response: " + response);
+                return;
+            }
+
+            String[] okParts = response.split(" ");
+            long fileSize = Long.parseLong(okParts[3]);
+            int dataPort = Integer.parseInt(okParts[5]);
+            System.out.println("Downloading " + filename + " (" + fileSize + " bytes)");
+
+            try (RandomAccessFile file = new RandomAccessFile(filename, "rw")) {
+                int current = 0;
+                while (current < fileSize) {
+                    int end = (int) Math.min(current + 999, fileSize - 1);
+                    String dataRequest = String.format("FILE %s GET START %d END %d", filename, current, end);
+                    byte[] dataSend = dataRequest.getBytes();
+                    DatagramPacket dataSendPacket = new DatagramPacket(dataSend, dataSend.length, address, dataPort);
+                    socket.send(dataSendPacket);
+
+                    byte[] dataReceive = new byte[2048];
+                    DatagramPacket dataReceivePacket = new DatagramPacket(dataReceive, dataReceive.length);
+                    socket.receive(dataReceivePacket);
+                    String dataResponse = new String(dataReceivePacket.getData(), 0, dataReceivePacket.getLength()).trim();
+
+                    String[] parts = dataResponse.split(" DATA ");
+                    byte[] decodedData = Base64.getDecoder().decode(parts[1]);
+                    file.seek(current);
+                    file.write(decodedData);
+                    current += decodedData.length;
+                    System.out.print("*");
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
