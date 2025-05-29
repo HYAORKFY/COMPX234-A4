@@ -19,7 +19,7 @@ public class UDPserver {
             String request = new String(requestPacket.getData(), 0, requestPacket.getLength()).trim();
             String[] tokens = request.split(" ");
             if (tokens.length != 2 || !tokens[0].equals("DOWNLOAD")) {
-                continue; // Ignore invalid requests
+                continue; 
             }
 
             String filename = tokens[1];
@@ -27,14 +27,20 @@ public class UDPserver {
             InetAddress clientAddress = requestPacket.getAddress();
             int clientPort = requestPacket.getPort();
 
-            if (!file.exists()) {
-                String response = "ERR " + filename + " NOT_FOUND";
-                sendResponse(welcomeSocket, clientAddress, clientPort, response);
-            } else {
-                int dataPort = 50000 + (int) (Math.random() * 1000);
-                String okResponse = "OK " + filename + " SIZE " + file.length() + " PORT " + dataPort;
-                sendResponse(welcomeSocket, clientAddress, clientPort, okResponse);
-            }
+            new Thread(() -> {
+                try {
+                    if (!file.exists()) {
+                        String response = "ERR " + filename + " NOT_FOUND";
+                        sendResponse(welcomeSocket, clientAddress, clientPort, response);
+                    } else {
+                        int dataPort = 50000 + (int) (Math.random() * 1000);
+                        String okResponse = "OK " + filename + " SIZE " + file.length() + " PORT " + dataPort;
+                        sendResponse(welcomeSocket, clientAddress, clientPort, okResponse);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }).start();
         }
     }
 
