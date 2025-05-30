@@ -69,10 +69,13 @@ public class UDPclient {
                             String dataResponse = new String(dataReceivePacket.getData(), 0, dataReceivePacket.getLength()).trim();
 
                             String[] parts = dataResponse.split(" DATA ");
+                            String[] header = parts[0].split(" ");
+                            int startReceived = Integer.parseInt(header[4]);
+                            int endReceived = Integer.parseInt(header[6]);
                             byte[] decodedData = Base64.getDecoder().decode(parts[1]);
-                            file.seek(current);
+                            file.seek(startReceived);
                             file.write(decodedData);
-                            current += decodedData.length;
+                            current = endReceived + 1;
                             System.out.print("*");
                         }
                     }
