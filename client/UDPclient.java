@@ -78,6 +78,17 @@ public class UDPclient {
                             current = endReceived + 1;
                             System.out.print("*");
                         }
+
+                        String closeRequest = "FILE " + filename + " CLOSE";
+                        byte[] closeSend = closeRequest.getBytes();
+                        DatagramPacket closeSendPacket = new DatagramPacket(closeSend, closeSend.length, address, dataPort);
+                        socket.send(closeSendPacket);
+
+                        byte[] closeReceive = new byte[1024];
+                        DatagramPacket closeReceivePacket = new DatagramPacket(closeReceive, closeReceive.length);
+                        socket.receive(closeReceivePacket);
+                        String closeResponse = new String(closeReceivePacket.getData(), 0, closeReceivePacket.getLength()).trim();
+                        System.out.println("\nClose response: " + closeResponse);
                     }
                 } catch (SocketTimeoutException e) {
                     attempt++;
