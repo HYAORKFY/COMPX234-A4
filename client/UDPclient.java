@@ -33,12 +33,13 @@ public class UDPclient {
 
             boolean receivedResponse = false;
             int attempt = 0;
+            int timeout = INITIAL_TIMEOUT;
             while (!receivedResponse && attempt < MAX_RETRY) {
                 try {
                     socket.send(sendPacket);
                     byte[] receiveData = new byte[1024];
                     DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-                    socket.setSoTimeout(INITIAL_TIMEOUT);
+                    socket.setSoTimeout(timeout);
                     socket.receive(receivePacket);
                     String response = new String(receivePacket.getData(), 0, receivePacket.getLength()).trim();
                     receivedResponse = true;
@@ -92,6 +93,7 @@ public class UDPclient {
                     }
                 } catch (SocketTimeoutException e) {
                     attempt++;
+                    timeout *= 2; 
                     System.out.println("Timeout, retrying... (" + attempt + "/" + MAX_RETRY + ")");
                 }
             }
