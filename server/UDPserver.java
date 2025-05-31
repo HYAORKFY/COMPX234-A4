@@ -21,8 +21,14 @@ public class UDPserver {
 
             String request = new String(requestPacket.getData(), 0, requestPacket.getLength()).trim();
             String[] tokens = request.split(" ");
+            
+            
+            System.out.println("[Client " + requestPacket.getAddress().getHostAddress() + ":" + 
+                             requestPacket.getPort() + "] Requested: " + request);
+
             if (tokens.length != 2 || !tokens[0].equals("DOWNLOAD")) {
-                continue; 
+                System.out.println("[Server] Ignored invalid request: " + request);
+                continue;
             }
 
             String filename = tokens[1];
