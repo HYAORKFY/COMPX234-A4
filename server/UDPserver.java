@@ -48,6 +48,12 @@ public class UDPserver {
 
                     int dataPort = 50000 + (int) (Math.random() * 1000);
                     String okResponse = "OK " + filename + " SIZE " + file.length() + " PORT " + dataPort;
+                    
+
+                    System.out.println("[Client " + clientAddress.getHostAddress() + ":" + 
+                                     clientPort + "] Assigned data port " + dataPort + 
+                                     " for file: " + filename);
+
                     sendResponse(welcomeSocket, clientAddress, clientPort, okResponse);
 
                     DatagramSocket dataSocket = new DatagramSocket(dataPort);
@@ -71,6 +77,8 @@ public class UDPserver {
                 if (tokens[0].equals("FILE") && tokens[2].equals("CLOSE")) {
                     String response = "FILE " + tokens[1] + " CLOSE_OK";
                     sendResponse(dataSocket, clientAddress, clientPort, response);
+                    System.out.println("[Client " + clientAddress.getHostAddress() + ":" + 
+                                     clientPort + "] File " + tokens[1] + " sent successfully");
                     break;
                 }
 
