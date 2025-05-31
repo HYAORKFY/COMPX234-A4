@@ -40,6 +40,8 @@ public class UDPserver {
                 try {
                     if (!file.exists()) {
                         String response = "ERR " + filename + " NOT_FOUND";
+                        System.out.println("[Client " + clientAddress.getHostAddress() + ":" + 
+                                         clientPort + "] File not found: " + filename);
                         sendResponse(welcomeSocket, clientAddress, clientPort, response);
                         return;
                     }
