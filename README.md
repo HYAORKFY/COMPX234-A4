@@ -25,7 +25,7 @@ The goal of this project is to develop a client/server network program based on 
    ```
    java UDPserver <port>
    ```
-   <port>: The port number on which the server listens, for example, `51234`.
+   - port: The port number on which the server listens, for example, `51234`.
 3. Ensure that the server directory contains the files available for download.
 
 ### Client Startup
@@ -35,13 +35,13 @@ The goal of this project is to develop a client/server network program based on 
    ```
    java UDPclient <hostname> <port> <filelist>
    ```
-   <hostname>: The hostname or IP address of the server, for example, `localhost`.
-   <port>: The port number on which the server listens, for example, `51234`.
-   <filelist>: The path to the file containing the list of filenames, for example, `files.txt`.
+   - hostname: The hostname or IP address of the server, for example, `localhost`.
+   - port: The port number on which the server listens, for example, `51234`.
+   - filelist: The path to the file containing the list of filenames, for example, `files.txt`.
 4. The client will download the files listed in the file list one by one.
 
 ## Testing Steps
 1. Prepare test files in the server directory.
 2. Start the server program.
 3. Create a file list file in the client directory and start the client program.
-4. You can also try running multiple client instances on different machines to download files simultaneously and verify the multi-client concurrent download functionality.
+4. You can also try running multiple client instances on different machines to download files simultaneously and verify the multi-client concurrent download functionality.I have verified it and found that it can pass the verification.
